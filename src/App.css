@@ -1,0 +1,23 @@
+
+.card-register {
+    box-shadow: 0 1rem 2rem 0 rgba(0, 0, 0, 0.6);
+}
+
+.fb-btn, .fb-btn:not([disabled]):not(.disabled):active, .fb-btn:not([disabled]):not(.disabled).active, .show > .fb-btn.dropdown-toggle {
+    background-color: rgb(59, 89, 152) !important;
+}
+
+.google-btn, .google-btn:not([disabled]):not(.disabled):active, .google-btn:not([disabled]):not(.disabled).active, .show > .google-btn.dropdown-toggle {
+    background-color: rgb(221, 75, 57) !important;;
+}
+
+#root {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0;
+    padding: 0;
+}
+
+.content {
+    margin-top: 10rem;
+}
