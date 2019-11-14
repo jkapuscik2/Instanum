@@ -1,9 +1,13 @@
-import React, {useRef, useState} from "react"
+import React, {useState} from "react"
 import {MDBBtn, MDBCard, MDBCardBody, MDBCol, MDBInput, MDBRow} from "mdbreact";
 import {Link} from "react-router-dom";
-import {INDEX, LOGIN, REGISTER} from "../../../routes";
+import {INDEX} from "../../../routes";
 import Logo from "../../../assets/logo.png";
 import {withAuth} from "../../../services/auth";
+import RegisterCard from "../RegisterCard";
+import LoginCard from "../LoginCard";
+import ErrorMsg from "../ErrorMsg";
+import SuccessMsg from "../SuccessMsg";
 
 const initialState = {
     name: "",
@@ -126,38 +130,20 @@ const PasswordForget = ({auth}) => {
                             </form>
                         }
                         {
-                            state.showError ?
-                                (
-                                    <div className="alert alert-danger mt-3" role="alert">
-                                        {state.errorText}
-                                    </div>
-                                )
+                            state.showError
+                                ? <ErrorMsg msg={state.errorText}/>
                                 : ""
                         }
                         {
-                            state.showSuccess ?
-                                <div className="alert alert-success mt-3" role="alert">
-                                    <h4 className="alert-heading">Well done!</h4>
-                                    <p className={"success-text"}>
-                                        {state.successText}
-                                    </p>
-                                </div>
+                            state.showSuccess
+                                ? <SuccessMsg msg={state.successText}/>
                                 : ""
                         }
                     </MDBCardBody>
                 </MDBCard>
 
-                <MDBCard className={"card-register p-1 mt-2"}>
-                    <MDBRow middle={true} className={"mt-1 text-center"}>
-                        Have account? <Link to={LOGIN} className={"ml-1"}> Log in</Link>
-                    </MDBRow>
-                </MDBCard>
-
-                <MDBCard className={"card-register p-1 mt-2"}>
-                    <MDBRow middle={true} className={"mt-1 text-center"}>
-                        Do not have account? <Link to={REGISTER} className={"ml-1"}> Register</Link>
-                    </MDBRow>
-                </MDBCard>
+                <LoginCard/>
+                <RegisterCard/>
             </MDBCol>
         </MDBRow>
     )

@@ -1,35 +1,45 @@
-import React, {useState, useRef} from "react"
-import {MDBRow, MDBCol, MDBBtn, MDBInput, MDBCard, MDBCardBody, MDBIcon} from 'mdbreact'
+import React, {useState} from "react"
+import {MDBRow, MDBCol, MDBBtn, MDBInput, MDBCard, MDBCardBody} from 'mdbreact'
 import {withAuth} from "../../../services/auth"
-import {INDEX, PASSWORD_FORGET, REGISTER} from "../../../routes";
+import {INDEX} from "../../../routes";
 import {Link} from 'react-router-dom'
 import Logo from "../../../assets/logo.png"
+import FbLogin from "../FbLogin";
+import GoogleLogin from "../GoogleLogin";
+import RegisterCard from "../RegisterCard";
+import ForgotCard from "../ForgotCard";
+import ErrorMsg from "../ErrorMsg";
 
 const initialState = {
     name: "",
-    password: ""
+    password: "",
+    showError: false,
+    errorText: ""
 }
 
 const Login = ({auth}) => {
-    const [formData, setFormData] = useState(initialState)
-    const errorMsg = useRef(null);
+    const [state, setState] = useState(initialState)
 
     const handleSubmit = async event => {
         event.preventDefault()
 
         const result = await auth.login(
-            formData.name,
-            formData.password
+            state.name,
+            state.password
         )
 
         if (result && !result.success) {
-            errorMsg.current.style.display = 'block'
-            errorMsg.current.innerHTML = result.error.message
+            setState({
+                ...state,
+                showSuccess: false,
+                showError: true,
+                errorText: result.error.message
+            })
         }
     }
 
     const changeHandler = event => {
-        setFormData({...formData, [event.target.name]: event.target.value})
+        setState({...state, [event.target.name]: event.target.value})
     }
 
     return (
@@ -44,12 +54,8 @@ const Login = ({auth}) => {
                         </MDBCol>
                         <form className="needs-validation" onSubmit={handleSubmit}>
                             <MDBRow middle={true} className={"mt-5"}>
-                                <MDBBtn className={"fb-btn mx-auto"}>
-                                    <MDBIcon fab icon="facebook-f" className="pr-1"/> Login with Facebook
-                                </MDBBtn>
-                                <MDBBtn className={"google-btn mx-auto"}>
-                                    <MDBIcon fab icon="google-plus-g" className="pr-1 "/>Login with Google
-                                </MDBBtn>
+                                <FbLogin/>
+                                <GoogleLogin/>
                             </MDBRow>
                             <p className="h6 text-center mb-4 mt-4">or</p>
                             <div className="grey-text">
@@ -60,7 +66,7 @@ const Login = ({auth}) => {
                                     type="text"
                                     required={true}
                                     name={"name"}
-                                    value={formData.name}
+                                    value={state.name}
                                     onChange={changeHandler}
                                 />
                                 <MDBInput
@@ -70,7 +76,7 @@ const Login = ({auth}) => {
                                     type="password"
                                     required={true}
                                     name={"password"}
-                                    value={formData.password}
+                                    value={state.password}
                                     onChange={changeHandler}
                                 />
                             </div>
@@ -78,23 +84,15 @@ const Login = ({auth}) => {
                                 <MDBBtn color="indigo" type={"submit"}>Login</MDBBtn>
                             </div>
                         </form>
-                        <div className="alert alert-danger mt-3" role="alert" ref={errorMsg}
-                             style={{display: "none"}}>
-                        </div>
+
+                        {state.showError
+                            ? <ErrorMsg msg={state.errorText}/>
+                            : ""}
                     </MDBCardBody>
                 </MDBCard>
 
-                <MDBCard className={"card-register p-1 mt-2"}>
-                    <MDBRow middle={true} className={"mt-1 text-center"}>
-                        Do not have account? <Link to={REGISTER} className={"ml-1"}> Register</Link>
-                    </MDBRow>
-                </MDBCard>
-
-                <MDBCard className={"card-register p-1 mt-2"}>
-                    <MDBRow middle={true} className={"mt-1 text-center"}>
-                        Forgot password? <Link to={PASSWORD_FORGET} className={"ml-1"}> Reset it</Link>
-                    </MDBRow>
-                </MDBCard>
+                <RegisterCard/>
+                <ForgotCard/>
             </MDBCol>
         </MDBRow>
     )

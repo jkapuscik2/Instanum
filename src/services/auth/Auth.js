@@ -1,37 +1,45 @@
 import Aplify, {Auth as AmplifyAuth, Hub} from "aws-amplify"
 import store from "../../store";
 import {setUser} from "../../actions/user";
+import awsConfig from "../../aws-exports"
 
 class Auth {
     constructor() {
-        Aplify.configure({
-            Auth: {
-                mandatorySignIn: true,
-                region: process.env.REACT_APP_AWS_REGION,
-                userPoolId: process.env.REACT_APP_AWS_CONGNITO_USER_POOL,
-                userPoolWebClientId: process.env.REACT_APP_AWS_CONGNITO_APP_CLIENT_ID
-            }
-        })
+        Aplify.configure(
+            awsConfig
+        )
 
         const {dispatch} = store
+
+        this.listener(store.dispatch)
 
         this.get().then((user) => {
             dispatch(setUser(user))
         })
-        this.listener(store.dispatch)
     }
 
     listener = (dispatch) => {
-        Hub.listen('auth', (data) => {
+        Hub.listen('auth', async (data) => {
             switch (data.payload.event) {
                 case "signIn":
-                    dispatch(setUser(data.payload.data))
+                    const user = await this.get()
+                    dispatch(setUser(user))
                     break;
                 case "signOut":
                     dispatch(setUser(null))
                     break
+                default:
+                    console.log("Auth HUB event", data)
             }
         })
+    }
+
+    fb = () => {
+        AmplifyAuth.federatedSignIn({provider: 'Facebook'})
+    }
+
+    google = () => {
+        AmplifyAuth.federatedSignIn({provider: 'Google'})
     }
 
     get = async () => {
